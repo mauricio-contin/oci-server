@@ -1,3 +1,5 @@
-echo "discord.py
+discord.py
 oci
-schedule" > requirements.txt
+schedule
+yt-dlp
+youtube-search-python
