@@ -1,8 +1,3 @@
-
-### **1.3 Crie um `setup.sh`**
-Um script para facilitar a instalação e configuração:
-
-```bash
 #!/bin/bash
 
 echo "Atualizando o sistema..."
