@@ -24,35 +24,45 @@ async def play_music(ctx):
     ffmpeg_options = {'options': '-vn'}
     ydl_options = {'format': 'bestaudio/best'}
 
-    with youtube_dl.YoutubeDL(ydl_options) as ydl:
-        info = ydl.extract_info(url, download=False)
-        url2 = info['url']
+    try:
+        with youtube_dl.YoutubeDL(ydl_options) as ydl:
+            info = ydl.extract_info(url, download=False)
+            url2 = info['url']
 
-    if voice_client and voice_client.is_connected():
-        voice_client.stop()
-        voice_client.play(discord.FFmpegPCMAudio(url2, **ffmpeg_options), after=lambda e: asyncio.run_coroutine_threadsafe(play_music(ctx), bot.loop))
-        await ctx.send(f"🎶 Tocando agora: {info['title']}")
-    else:
-        await ctx.send("❌ O bot não está conectado a um canal de voz.")
+        if voice_client and voice_client.is_connected():
+            voice_client.stop()
+            voice_client.play(
+                discord.FFmpegPCMAudio(url2, **ffmpeg_options),
+                after=lambda e: asyncio.run_coroutine_threadsafe(play_music(ctx), bot.loop)
+            )
+            await ctx.send(f"🎶 Tocando agora: {info['title']}")
+        else:
+            await ctx.send("❌ O bot não está conectado a um canal de voz.")
+    except Exception as e:
+        await ctx.send(f"❌ Ocorreu um erro ao tentar tocar a música: {e}")
 
-# Comando para se conectar a um canal de voz
-@bot.command(name="join")
-async def join(ctx):
-    global voice_client
-    if ctx.author.voice:
+# Comando para reproduzir música e entrar no canal de voz
+@bot.command(name="play")
+async def play(ctx, url: str):
+    global voice_client, queue
+
+    # Verifica se o usuário está em um canal de voz
+    if not ctx.author.voice:
+        await ctx.send("❌ Você precisa estar em um canal de voz para usar este comando.")
+        return
+
+    # Conecta ao canal do usuário, se necessário
+    if not voice_client or not voice_client.is_connected():
         channel = ctx.author.voice.channel
         voice_client = await channel.connect()
         await ctx.send(f"🔊 Conectado ao canal: {channel.name}")
-    else:
-        await ctx.send("❌ Você precisa estar em um canal de voz.")
 
-# Comando para adicionar música à fila
-@bot.command(name="add")
-async def add(ctx, url: str):
-    global queue
+    # Adiciona a música à fila
     queue.append(url)
     await ctx.send(f"🎵 Música adicionada à fila: {url}")
-    if len(queue) == 1:
+
+    # Se não estiver tocando música, inicia a reprodução
+    if not voice_client.is_playing():
         await play_music(ctx)
 
 # Comando para pular para a próxima música
