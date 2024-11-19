@@ -145,5 +145,31 @@ async def alterar_horario(ctx, dia: str, horario: str):
         await ctx.send("Dia inválido! Use 'semana' ou 'fim_de_semana'.")
     configure_schedule()  # Reconfigura os agendamentos com os novos horários
 
+@bot.event
+async def on_voice_state_update(member, before, after):
+    """
+    Monitora mudanças de estado de voz e inicia o servidor
+    automaticamente quando um usuário específico entra no canal "Satiscord".
+    """
+    try:
+        # Verifica se o usuário entrou em um canal de voz
+        if before.channel != after.channel and after.channel:
+            # Nome ou IDs dos usuários-alvo
+            target_users = ["mitshow", "maucontin"]
+            target_channel = "Satiscord"  # Nome do canal específico
+            
+            # Se o nome do canal corresponder e o usuário for um dos alvos
+            if after.channel.name == target_channel and member.name in target_users:
+                # Inicia o servidor
+                status = start_instance()
+                print(f"Usuário {member.name} entrou no canal {target_channel}. Servidor iniciado.")
+                # Envia mensagem de confirmação no canal de texto padrão do servidor
+                default_channel = discord.utils.get(member.guild.text_channels, name="geral")  # Ajuste conforme o canal desejado
+                if default_channel:
+                    await default_channel.send(f"Usuário {member.name} entrou no canal {target_channel}. O servidor está iniciando. Status atual: {status}.")
+    except Exception as e:
+        print(f"Erro ao processar entrada no canal de voz: {e}")
+
+
 # Inicializa o bot
 bot.run(TOKEN)
