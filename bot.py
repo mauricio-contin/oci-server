@@ -7,7 +7,7 @@ import time
 from datetime import datetime, timedelta
 
 # Configuração do Discord
-TOKEN = 'MTMwNDU5MTA0NTc2OTgyMjI1OQ.G8VRFB.I23CPHkeKt-v4oM8ESUKko_stWNg25-uacAj6A'
+TOKEN = 'TOKEN_DISCORD'
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -17,7 +17,7 @@ config = oci.config.from_file("~/.oci/config", "DEFAULT")  # Ajuste o caminho, s
 compute_client = oci.core.ComputeClient(config)
 
 # ID da instância na OCI
-INSTANCE_ID = "ocid1.instance.oc1.sa-saopaulo-1.antxeljr6sqfzdiclm44tndv553t47jv5enxvceyc7ihegd2hsmpkuzaxirq"
+INSTANCE_ID = "OCID_INSTANCIA"
 shutdown_delay = 0  # Em horas, 0 significa sem adiamento
 shutdown_time_weekdays = "05:00"  # Horário de desligamento de segunda a sexta
 shutdown_time_weekend = "06:00"  # Horário de desligamento no sábado e domingo
